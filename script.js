@@ -162,7 +162,7 @@ document.getElementById("csv").addEventListener("click",()=>{
     ["日時","学生番号","氏名","判定",...groups],
     ...saved.map(r=>[r.timestamp,r.studentNo,r.name||"",r.type,...groups.map(g=>r.scores[g])])
   ];
-  const csv="\\uFEFF"+rows.map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\\r\\n");
+  const csv="\uFEFF"+rows.map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\r\n");
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
