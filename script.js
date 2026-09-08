@@ -54,8 +54,7 @@ const GROUPS = {
 
 const CHOICES=[["はい",2],["まあ",1],["あまり",-1],["いいえ",-2]];
 const KEY="jungTypeRecords_v2";
-const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwFvST3gUmw_ZX7TPPUufj7INU9ucdRwFGEWCQxF6fXdFXR-WoX92WO_UQotn5nieOT/exec";
-
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxtvHelWK7sjsrZoSab9lHrr0JvcqHTpQZ_gxk4qk3pb_14tEDQxUsI5IaeHIdVLQ3-/exec";
 const quiz=document.getElementById("quiz");
 const start=document.getElementById("start");
 const teacher=document.getElementById("teacher");
