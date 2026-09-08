@@ -59,17 +59,15 @@ const CHOICES = [
   ["いいえ", -2]
 ];
 
-const KEY = "jungTypeRecords_v2";
-
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbzEGq0wP9pkZNoVjzBfcOA_A1IStNjWbbxZtprB_dHDoZAMt177G00VB7CoAflV2Sgp/exec";
 
 const quiz = document.getElementById("quiz");
 const start = document.getElementById("start");
-const teacher = document.getElementById("teacher");
 const result = document.getElementById("result");
 
 QUESTIONS.forEach((q, i) => {
+
   const n = i + 1;
 
   const div = document.createElement("div");
@@ -84,6 +82,7 @@ QUESTIONS.forEach((q, i) => {
   opts.className = "options";
 
   CHOICES.forEach(([label, value]) => {
+
     const id = `q${n}_${value}`;
 
     const lab = document.createElement("label");
@@ -94,24 +93,24 @@ QUESTIONS.forEach((q, i) => {
       `<input id="${id}" type="radio" name="q${n}" value="${value}"> ${label}`;
 
     opts.appendChild(lab);
+
   });
 
   div.appendChild(opts);
   quiz.appendChild(div);
+
 });
 
 const submit = document.createElement("div");
+
 submit.className = "submit";
-submit.innerHTML = `<button type="submit">診断結果を見る</button>`;
+
+submit.innerHTML =
+  `<button type="submit">診断結果を見る</button>`;
+
 quiz.appendChild(submit);
 
 document.getElementById("begin").addEventListener("click", () => {
-  const no = document.getElementById("studentNo").value.trim();
-
-  if (!no) {
-    alert("学生番号を入力してください。");
-    return;
-  }
 
   start.classList.add("hidden");
   quiz.classList.remove("hidden");
@@ -120,20 +119,25 @@ document.getElementById("begin").addEventListener("click", () => {
     top: 0,
     behavior: "smooth"
   });
+
 });
 
 quiz.addEventListener("submit", (e) => {
+
   e.preventDefault();
 
   const missing = [];
 
   for (let i = 1; i <= 40; i++) {
+
     if (!document.querySelector(`input[name="q${i}"]:checked`)) {
       missing.push(i);
     }
+
   }
 
   if (missing.length) {
+
     alert(
       `未回答があります（${missing.join(", ")}番）。すべて回答してください。`
     );
@@ -147,11 +151,13 @@ quiz.addEventListener("submit", (e) => {
       });
 
     return;
+
   }
 
   const scores = {};
 
   for (const [group, items] of Object.entries(GROUPS)) {
+
     scores[group] = items.reduce(
       (sum, n) =>
         sum +
@@ -160,59 +166,72 @@ quiz.addEventListener("submit", (e) => {
         ),
       0
     );
+
   }
 
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const sorted = Object.entries(scores).sort(
+    (a, b) => b[1] - a[1]
+  );
 
   const record = {
+
     timestamp: new Date().toLocaleString("ja-JP"),
-    studentNo: document.getElementById("studentNo").value.trim(),
-    name: document.getElementById("studentName").value.trim(),
-    type: sorted[0][0],
-    scores: scores
+
+    studentNo:
+      document.getElementById("studentNo").value.trim(),
+
+    name:
+      document.getElementById("studentName").value.trim(),
+
+    birthplace:
+      document.getElementById("birthplace").value.trim(),
+
+    type:
+      sorted[0][0],
+
+    scores:
+      scores
+
   };
-
-  // このブラウザにも回答データを保存
-  const saved = loadRecords();
-
-  saved.push(record);
-
-  localStorage.setItem(
-    KEY,
-    JSON.stringify(saved)
-  );
 
   // Googleスプレッドシートへ送信
   fetch(GOOGLE_SCRIPT_URL, {
+
     method: "POST",
+
     mode: "no-cors",
+
     headers: {
       "Content-Type": "text/plain;charset=utf-8"
     },
+
     body: JSON.stringify(record)
+
   }).catch((error) => {
+
     console.error(
       "Googleスプレッドシートへの送信に失敗しました:",
       error
     );
+
   });
 
   showResult(record, sorted);
 
   quiz.classList.add("hidden");
-  teacher.classList.remove("hidden");
-
-  renderRecords();
 
   window.scrollTo({
     top: 0,
     behavior: "smooth"
   });
+
 });
 
 function showResult(record, sorted) {
+
   result.innerHTML =
     `<div class="panel">
+
       <h2>診断結果</h2>
 
       <div class="type-box">
@@ -225,6 +244,7 @@ function showResult(record, sorted) {
 
       ${sorted
         .map(([name, score]) => {
+
           const pct = Math.max(
             0,
             Math.min(
@@ -235,151 +255,38 @@ function showResult(record, sorted) {
 
           return `
             <div class="score">
-              <div>${escapeHtml(name)}</div>
+
+              <div>
+                ${escapeHtml(name)}
+              </div>
+
               <div class="barbg">
+
                 <div
                   class="bar"
                   style="width:${pct}%"
                 ></div>
+
               </div>
+
               <strong>
                 ${score > 0 ? "+" : ""}${score}
               </strong>
+
             </div>
           `;
+
         })
         .join("")}
+
     </div>`;
 
   result.classList.remove("hidden");
+
 }
-
-function loadRecords() {
-  try {
-    return JSON.parse(
-      localStorage.getItem(KEY) || "[]"
-    );
-  } catch (e) {
-    return [];
-  }
-}
-
-function renderRecords() {
-  const saved = loadRecords();
-  const box = document.getElementById("records");
-
-  if (!saved.length) {
-    box.innerHTML =
-      "<p>まだ回答データはありません。</p>";
-    return;
-  }
-
-  const groups = Object.keys(GROUPS);
-
-  box.innerHTML =
-    `<div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>日時</th>
-            <th>学生番号</th>
-            <th>氏名</th>
-            <th>判定</th>
-            ${groups
-              .map(
-                (g) =>
-                  `<th>${escapeHtml(g)}</th>`
-              )
-              .join("")}
-          </tr>
-        </thead>
-
-        <tbody>
-          ${saved
-            .map(
-              (r) =>
-                `<tr>
-                  <td>${escapeHtml(r.timestamp)}</td>
-                  <td>${escapeHtml(r.studentNo)}</td>
-                  <td>${escapeHtml(r.name || "")}</td>
-                  <td>${escapeHtml(r.type)}</td>
-                  ${groups
-                    .map(
-                      (g) =>
-                        `<td>${r.scores[g]}</td>`
-                    )
-                    .join("")}
-                </tr>`
-            )
-            .join("")}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-document.getElementById("csv").addEventListener("click", () => {
-  const saved = loadRecords();
-
-  if (!saved.length) {
-    alert("保存された回答データがありません。");
-    return;
-  }
-
-  const groups = Object.keys(GROUPS);
-
-  const rows = [
-    ["日時", "学生番号", "氏名", "判定", ...groups],
-    ...saved.map((r) => [
-      r.timestamp,
-      r.studentNo,
-      r.name || "",
-      r.type,
-      ...groups.map((g) => r.scores[g])
-    ])
-  ];
-
-  const csv =
-    "\uFEFF" +
-    rows
-      .map((row) =>
-        row
-          .map(
-            (v) =>
-              `"${String(v).replaceAll('"', '""')}"`
-          )
-          .join(",")
-      )
-      .join("\r\n");
-
-  const blob = new Blob(
-    [csv],
-    {
-      type: "text/csv;charset=utf-8"
-    }
-  );
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "jung_type_results.csv";
-  a.click();
-
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById("clear").addEventListener("click", () => {
-  if (
-    confirm(
-      "このブラウザに保存された回答データをすべて削除します。よろしいですか？"
-    )
-  ) {
-    localStorage.removeItem(KEY);
-    renderRecords();
-  }
-});
 
 function escapeHtml(s) {
+
   return String(s).replace(
     /[&<>"']/g,
     (c) =>
@@ -391,6 +298,5 @@ function escapeHtml(s) {
         "'": "&#39;"
       }[c])
   );
-}
 
-renderRecords();
+}
