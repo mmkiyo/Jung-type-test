@@ -54,6 +54,7 @@ const GROUPS = {
 
 const CHOICES=[["はい",2],["まあ",1],["あまり",-1],["いいえ",-2]];
 const KEY="jungTypeRecords_v2";
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwFvST3gUmw_ZX7TPPUufj7INU9ucdRwFGEWCQxF6fXdFXR-WoX92WO_UQotn5nieOT/exec";
 
 const quiz=document.getElementById("quiz");
 const start=document.getElementById("start");
@@ -118,6 +119,17 @@ quiz.addEventListener("submit",(e)=>{
   saved.push(record);
   localStorage.setItem(KEY,JSON.stringify(saved));
 
+  fetch(GOOGLE_SCRIPT_URL, {
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify(record)
+}).catch(error => {
+  console.error("Googleスプレッドシートへの送信に失敗しました:", error);
+});
+  
   showResult(record,sorted);
   quiz.classList.add("hidden");
   teacher.classList.remove("hidden");
