@@ -6,36 +6,68 @@
 <title>ユングのタイプ論・診断テスト</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 <main class="container">
+
   <header>
     <h1>ユングのタイプ論・診断テスト</h1>
     <p>40項目について、あなた自身にどの程度当てはまるか回答してください。</p>
   </header>
 
   <section id="start" class="panel">
-    <label for="studentNo">学生番号 <span class="required">必須</span></label>
-    <input id="studentNo" type="text" autocomplete="off" placeholder="例：12345678">
-    <label for="studentName">氏名 <span class="optional">任意</span></label>
-    <input id="studentName" type="text" autocomplete="off" placeholder="例：山田太郎">
-    <p class="small">※このローカル版では、回答データはこのブラウザに保存されます。後で先生用一覧から確認・CSV保存できます。</p>
-    <button id="begin" type="button">診断を開始する</button>
+
+    <label for="studentNo">
+      学生番号 <span class="optional">任意</span>
+    </label>
+
+    <input
+      id="studentNo"
+      type="text"
+      autocomplete="off"
+      placeholder="例：12345678"
+    >
+
+    <label for="studentName">
+      氏名 <span class="optional">任意</span>
+    </label>
+
+    <input
+      id="studentName"
+      type="text"
+      autocomplete="off"
+      placeholder="例：山田太郎"
+    >
+
+    <label for="birthplace">
+      出身地 <span class="optional">任意</span>
+    </label>
+
+    <input
+      id="birthplace"
+      type="text"
+      autocomplete="off"
+      placeholder="例：福岡県"
+    >
+
+    <p class="small">
+      ※出身地は任意です。授業で使用する場合は学籍番号を入力してください。
+    </p>
+
+    <button id="begin" type="button">
+      診断を開始する
+    </button>
+
   </section>
 
   <form id="quiz" class="hidden"></form>
 
   <section id="result" class="hidden"></section>
 
-  <section id="teacher" class="panel hidden">
-    <h2>回答データ（先生用）</h2>
-    <p class="small">このPC・ブラウザに保存されている回答を表示しています。</p>
-    <div id="records"></div>
-    <div class="buttons">
-      <button id="csv" type="button">CSVを保存</button>
-      <button id="clear" type="button" class="danger">全データを削除</button>
-    </div>
-  </section>
 </main>
+
 <script src="script.js"></script>
+
 </body>
 </html>
